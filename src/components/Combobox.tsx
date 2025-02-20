@@ -50,6 +50,10 @@ export function Combobox({ list, hidden, onSelect }: ComboboxProps) {
           <CommandList>
             <CommandEmpty>No ingredient found.</CommandEmpty>
             <CommandGroup>
+              {/* If there's no more items, show a message */}
+              {list.filter((item) => !hidden?.includes(item.value)).length === 0 && (
+                <CommandEmpty>No more items.</CommandEmpty>
+              )}
               {list.filter((item) => !hidden?.includes(item.value)).map((item) => (
                 <CommandItem
                   key={item.value}
@@ -59,7 +63,8 @@ export function Combobox({ list, hidden, onSelect }: ComboboxProps) {
                     setOpen(false)
                   }}
                 >
-                  <img src={item.image_url} alt={item.label} className="w-4 h-4" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={item.image_url} alt={item.label} className="w-4" />
                   {item.label}
                 </CommandItem>
               ))}
