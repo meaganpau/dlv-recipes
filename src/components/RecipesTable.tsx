@@ -31,6 +31,8 @@ import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, Star, X } from "lucide-re
 import { Recipe } from '@/types/recipe';
 import { Ingredient } from '@/types/ingredient';
 import { Combobox } from '@/components/Combobox';
+import { useDebouncedCallback } from 'use-debounce';
+
 
 import '@/styles/DataTable.scss'
 
@@ -43,6 +45,7 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
   const GRID_TEMPLATE_COLUMNS = '1fr 2fr 2fr 1fr 1fr 1fr 2fr 2fr'
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [searchTerm, setSearchTerm] = React.useState<string>('')
 
   const memoizedData = useMemo(() => data, [data])
 
@@ -315,7 +318,7 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
         }
       }
     ],
-    [renderIngredients, renderType]
+    [renderIngredients, renderType, renderStars]
   )
 
   const table = useReactTable({
@@ -346,13 +349,20 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
     )
   }
 
+  const debouncedSearch = useDebouncedCallback((value) => {
+    table.getColumn('name')?.setFilterValue(value)
+  }, 200);
+
   return (
     <div className='space-y-4'>
       <div className='gap-4'>
         <Input
           placeholder='Search recipes...'
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={event => table.getColumn('name')?.setFilterValue(event.target.value)}
+          value={searchTerm}
+          onChange={event => {
+            setSearchTerm(event.target.value)
+            debouncedSearch(event.target.value)
+          }}
           className='max-w-sm'
         />
         <div className='mt-1'>
