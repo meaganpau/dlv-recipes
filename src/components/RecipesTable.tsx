@@ -42,7 +42,6 @@ interface DataTableProps {
 }
 
 export default function DataTable({ data, ingredients }: DataTableProps) {
-  const GRID_TEMPLATE_COLUMNS = '1fr 2fr 2fr 1fr 1fr 1fr 2fr 2fr'
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [searchTerm, setSearchTerm] = React.useState<string>('')
@@ -62,7 +61,7 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
 
   const renderStars = useCallback((stars: Recipe['stars']) => {
     return (
-      <div className='flex items-center'>
+      <div className='flex items-center pl-3'>
         {Array.from({ length: 5 }).map((_, index) => (
           <Star key={index} size={12} fill={ index < stars ? '#2A344F' : '#ccc'} strokeWidth={0}/>
         ))}
@@ -163,7 +162,7 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
         header: ({ column }) => {
           return (
             <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-              Name
+              Recipe Name
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'desc' && <ArrowDown className='ml-2 h-4 w-4' />}
@@ -228,7 +227,14 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
         },
         cell: ({ row }) => {
           const energy = row.getValue('energy')
-          return <div className='font-medium'>{energy as number}</div>
+          const formattedNumber = new Intl.NumberFormat().format(energy as number)
+          return <div className='font-medium pl-4 flex items-center gap-1'>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://dreamlightvalleywiki.com/images/a/a9/Energy.png" alt="Energy" style={{
+              maxHeight: '18px'
+            }} />
+            +{formattedNumber}
+          </div>
         }
       },
       {
@@ -245,7 +251,14 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
         },
         cell: ({ row }) => {
           const sell_price = row.getValue('sell_price')
-          return <div className='font-medium'>{sell_price as number}</div>
+          const formattedNumber = new Intl.NumberFormat().format(sell_price as number)
+          return <div className='font-medium pl-5 flex items-center gap-1'>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://dreamlightvalleywiki.com/images/2/2f/Star_Coin_icon.png" alt="Star Coin" style={{
+              maxHeight: '16px'
+            }} />
+            {formattedNumber}
+          </div>
         }
       },
       {
@@ -461,7 +474,7 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
           {table.getHeaderGroups().map(headerGroup => (
             <TableRow
               key={headerGroup.id}
-              style={{ width: '100%', display: 'inline-grid', gridTemplateColumns: GRID_TEMPLATE_COLUMNS }}
+              className='w-full'
             >
               {headerGroup.headers.map(header => {
                 return (
@@ -478,11 +491,7 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
             table.getRowModel().rows.map(row => (
               <TableRow
                 key={row.id}
-                style={{
-                  width: '100%',
-                  display: 'inline-grid',
-                  gridTemplateColumns: GRID_TEMPLATE_COLUMNS
-                }}
+                className='w-full'
               >
                 {row.getVisibleCells().map(cell => (
                   <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
