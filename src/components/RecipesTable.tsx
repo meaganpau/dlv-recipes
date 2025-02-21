@@ -462,6 +462,7 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
           size='sm'
           variant='default'
           onClick={() => {
+            setSearchTerm('')
             table.setColumnFilters(null)
             table.setSorting([])
           }}
