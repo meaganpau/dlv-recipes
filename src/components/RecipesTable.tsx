@@ -162,7 +162,7 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
         header: ({ column }) => {
           return (
             <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-              Recipe Name
+              Recipe name
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'desc' && <ArrowDown className='ml-2 h-4 w-4' />}
@@ -242,7 +242,7 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
         header: ({ column }) => {
           return (
             <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-              Sell Price
+              Sell price
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'desc' && <ArrowDown className='ml-2 h-4 w-4' />}

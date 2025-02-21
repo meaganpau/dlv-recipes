@@ -1,3 +1,5 @@
+'use server'
+
 import { Ingredient } from '@/types/ingredient';
 import { Recipe } from '@/types/recipe';
 import { sql } from '@vercel/postgres';
