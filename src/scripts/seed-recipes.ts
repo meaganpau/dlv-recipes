@@ -79,7 +79,70 @@ async function createTables() {
   }
 }
 
-async function seedRecipes() {
+async function seedIngredients(ingredient: IngredientData) {
+    // Get ingredient type image_url by looking up the ingredient name in the ingredients list in the ingredientsJson
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    let ingredientType = Object.entries(ingredientsJson).find(([_, value]) => value.ingredients.includes(ingredient.name))?.[0];
+    let isGeneric = false;
+
+    // hardcode `Any Vegetables` to `Any Vegetable`
+    if (ingredient.name === 'Any Vegetables') {
+      ingredient.name = 'Any Vegetable';
+    }
+
+    if (!ingredientType) {
+      // It must be a generic ingredient
+      const genericTypeMap = {
+        'Any Fruit': 'fruit',
+        'Any Grain': 'grain',
+        'Any Dairy or Oil': 'dairy_and_oil',
+        'Any Fish': 'fish',
+        'Any Meat': 'meat',
+        'Any Seafood': 'seafood',
+        'Any Spice': 'spices',
+        'Any Sweet': 'sweets',
+        'Any Vegetable': 'vegetables',
+        'Any Vegetables': 'vegetables',
+        'Any Ice': 'ice',
+      }
+
+      ingredientType = genericTypeMap[ingredient.name as keyof typeof genericTypeMap];
+      if (!ingredientType) {
+        console.error(`Invalid ingredient: "${ingredient.name}"`);
+        // skip this ingredient
+        return null;
+      } else {
+        isGeneric = true;
+      }
+    }
+
+    const ingredientTypeName = ingredientsJson[ingredientType as keyof typeof ingredientsJson].name;
+    const ingredientTypeImageUrl = ingredientsJson[ingredientType as keyof typeof ingredientsJson].image_url;
+
+    // Insert or get ingredient type
+    const ingredientTypeResult = await sql<{ id: number }>`
+      INSERT INTO ingredient_types (name, image_url)
+      VALUES (${ingredientTypeName}, ${ingredientTypeImageUrl})
+      ON CONFLICT (name)
+      DO UPDATE SET name = ingredient_types.name
+      RETURNING id;
+    `;
+    const ingredientTypeId = ingredientTypeResult.rows[0].id;
+    
+    // Insert or get ingredient
+    const ingredientResult = await sql<{ id: number }>`
+      INSERT INTO ingredients (name, is_generic, image_url, ingredient_type_id)
+      VALUES (${ingredient.name}, ${isGeneric}, ${ingredient.image_url}, ${ingredientTypeId})
+      ON CONFLICT (name) 
+      DO UPDATE SET name = ingredients.name
+      RETURNING id;
+    `;
+  const ingredientId = ingredientResult.rows[0].id;
+  
+  return ingredientId;
+}
+
+export async function seedRecipes() {
   try {
     await createTables();
 
@@ -167,69 +230,6 @@ async function seedRecipes() {
     console.error('Error seeding data:', error);
     throw error;
   }
-}
-
-async function seedIngredients(ingredient: IngredientData) {
-    // Get ingredient type image_url by looking up the ingredient name in the ingredients list in the ingredientsJson
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let ingredientType = Object.entries(ingredientsJson).find(([_, value]) => value.ingredients.includes(ingredient.name))?.[0];
-    let isGeneric = false;
-
-    // hardcode `Any Vegetables` to `Any Vegetable`
-    if (ingredient.name === 'Any Vegetables') {
-      ingredient.name = 'Any Vegetable';
-    }
-
-    if (!ingredientType) {
-      // It must be a generic ingredient
-      const genericTypeMap = {
-        'Any Fruit': 'fruit',
-        'Any Grain': 'grain',
-        'Any Dairy or Oil': 'dairy_and_oil',
-        'Any Fish': 'fish',
-        'Any Meat': 'meat',
-        'Any Seafood': 'seafood',
-        'Any Spice': 'spices',
-        'Any Sweet': 'sweets',
-        'Any Vegetable': 'vegetables',
-        'Any Vegetables': 'vegetables',
-        'Any Ice': 'ice',
-      }
-
-      ingredientType = genericTypeMap[ingredient.name as keyof typeof genericTypeMap];
-      if (!ingredientType) {
-        console.error(`Invalid ingredient: "${ingredient.name}"`);
-        // skip this ingredient
-        return null;
-      } else {
-        isGeneric = true;
-      }
-    }
-
-    const ingredientTypeName = ingredientsJson[ingredientType as keyof typeof ingredientsJson].name;
-    const ingredientTypeImageUrl = ingredientsJson[ingredientType as keyof typeof ingredientsJson].image_url;
-
-    // Insert or get ingredient type
-    const ingredientTypeResult = await sql<{ id: number }>`
-      INSERT INTO ingredient_types (name, image_url)
-      VALUES (${ingredientTypeName}, ${ingredientTypeImageUrl})
-      ON CONFLICT (name)
-      DO UPDATE SET name = ingredient_types.name
-      RETURNING id;
-    `;
-    const ingredientTypeId = ingredientTypeResult.rows[0].id;
-    
-    // Insert or get ingredient
-    const ingredientResult = await sql<{ id: number }>`
-      INSERT INTO ingredients (name, is_generic, image_url, ingredient_type_id)
-      VALUES (${ingredient.name}, ${isGeneric}, ${ingredient.image_url}, ${ingredientTypeId})
-      ON CONFLICT (name) 
-      DO UPDATE SET name = ingredients.name
-      RETURNING id;
-    `;
-  const ingredientId = ingredientResult.rows[0].id;
-  
-  return ingredientId;
 }
 
 seedRecipes();
