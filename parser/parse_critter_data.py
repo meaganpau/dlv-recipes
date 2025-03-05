@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 import json
 import os
 from typing import Dict, List, Optional, TypedDict, Union
@@ -120,6 +120,7 @@ def parse_schedule(row) -> Schedule:
         text = cell.get_text(strip=True)
         
         if text == 'n/a':
+            schedule[day] = False
             continue
         elif text == 'All day':
             schedule[day] = True
@@ -184,23 +185,48 @@ def extract_clean_text(cell) -> str:
     text = re.sub(r'\[\d+\]', '', text)
     return text.strip()
 
-def extract_location(cell) -> Optional[Location]:
+def extract_location(cell, locations: Optional[Dict[str, Location]] = None) -> Optional[Location]:
     """Extract location information from a cell."""
     link = cell.find('a')
     if not link:
         return None
         
     name = extract_clean_text(cell)
+    if not name:
+        name = cell.get_text(strip=True)
     if not name or name == 'n/a':
+        print(f"No location found for {cell}")
         return None
         
     img = cell.find('img')
-    image_url = BASE_URL + img['src'] if img else None
+    image_url = get_image_url(img)
+
+    if locations:
+        # get location from locations
+        location = locations.get(name)
+        if location:
+            return location
+        else:
+            new_location = {
+                'name': name,
+                'image_url': image_url
+            }
+            locations[name] = new_location
+            return new_location
     
     return {
         'name': name,
         'image_url': image_url
     }
+
+def get_image_url(img: Tag) -> str:
+    """Get the image url from a tag."""
+    image_url = img['src'] if img else None
+    if img['srcset']:
+        image_url = img['srcset'].split(',')[1].strip()
+        # remove the x2 from the image url
+        image_url = image_url.replace(' 2x', '')
+    return BASE_URL + image_url
 
 def main():
     # Read HTML files
@@ -252,10 +278,10 @@ def main():
             continue
             
         img = cells[0].find('img')
-        image_url = img['src'] if img else None
+        image_url = get_image_url(img)
         name = extract_clean_text(cells[1])
         location_cell = cells[2]
-        location_data = extract_location(location_cell)
+        location_data = extract_location(location_cell, locations)
         if location_data:
             locations[location_data['name']] = location_data
             
@@ -264,7 +290,7 @@ def main():
         
         if name and location_data and image_url:
             critters.append({
-                'image_url': BASE_URL + image_url,
+                'image_url': image_url,
                 'name': name,
                 'type': type,
                 'location': location_data['name'],

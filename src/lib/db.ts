@@ -2,6 +2,7 @@
 
 import { Ingredient } from '@/types/ingredient';
 import { Recipe } from '@/types/recipe';
+import { Critter } from '@/types/critter';
 import { sql } from '@vercel/postgres';
 
 export async function getAllRecipes() {
@@ -134,5 +135,29 @@ export async function getRecipesByIngredient(ingredientName: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch recipes by ingredient.');
+  }
+}
+
+export async function getAllCritters() {
+  try {
+    const { rows } = await sql<Critter>`
+      SELECT 
+        c.id,
+        c.name,
+        c.image_url,
+        ct.name as type,
+        json_build_object(
+          'name', l.name,
+          'image_url', l.image_url
+        ) as location,
+        c.schedule
+    FROM critters c
+    JOIN critter_types ct ON c.critter_type_id = ct.id
+    JOIN locations l ON ct.location_id = l.id;
+  `;
+    return rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch critter data.');
   }
 }

@@ -7,17 +7,17 @@ config({ path: path.resolve(process.cwd(), '.env.local') });
 type CritterData = {
     image_url: string;
     name: string;
-    type_id: string;
+    critter_type_id: string;
     location_id: string;
     schedule: {
         // if true, the critter is available all day
-        sunday?: string | boolean;
-        monday?: string | boolean;
-        tuesday?: string | boolean;
-        wednesday?: string | boolean;
-        thursday?: string | boolean;
-        friday?: string | boolean;
-        saturday?: string | boolean;
+        sunday: string | boolean;
+        monday: string | boolean;
+        tuesday: string | boolean;
+        wednesday: string | boolean;
+        thursday: string | boolean;
+        friday: string | boolean;
+        saturday: string | boolean;
     }
 }
 
@@ -86,7 +86,7 @@ async function createTables() {
     await sql`CREATE TABLE critters (
         id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
-        type_id INTEGER REFERENCES critter_types(id),
+        critter_type_id INTEGER REFERENCES critter_types(id),
         image_url TEXT,
         schedule JSONB NOT NULL
     )`;
@@ -135,7 +135,7 @@ export async function seedCritters() {
             console.error(`Critter type ${critter.type} not found for ${critter.name}`);
         }
         const critterTypeId = critterType.rows[0].id;
-        await sql`INSERT INTO critters (name, type_id, image_url, schedule) VALUES (${critter.name}, ${critterTypeId}, ${critter.image_url}, ${critter.schedule})`;
+        await sql`INSERT INTO critters (name, critter_type_id, image_url, schedule) VALUES (${critter.name}, ${critterTypeId}, ${critter.image_url}, ${critter.schedule})`;
     }
 
     console.log('Critters seeded successfully');
