@@ -81,7 +81,6 @@ export const getIsAvailableAtTime = (schedule: Critter['schedule'], day: string,
   }
 }
 
-
 const checkTime = (daySchedule: Critter['schedule'][keyof Critter['schedule']], hour: number | 'all-day', minute: number) => {
   if (hour === 'all-day') {
     return daySchedule === true
@@ -93,5 +92,12 @@ const checkTime = (daySchedule: Critter['schedule'][keyof Critter['schedule']], 
 
   const { startHour, endHour } = parseTimeString(daySchedule as string)
 
-  return ((startHour <= hour) && ((endHour > hour) || (endHour === hour && minute >= 0)))
+  let endHourToCompare = endHour
+  
+  // Handle cases where the date range ends at or past midnight
+  if (endHour < startHour) {
+    endHourToCompare = endHour + 24
+  }
+
+  return ((startHour <= hour) && ((endHourToCompare > hour) || (endHourToCompare === hour && minute >= 0)))
 }
