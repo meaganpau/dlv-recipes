@@ -8,3 +8,16 @@
 .optional-ingredient-list {
   padding-left: 0.5rem;
 }
+
+.critter-buttons-container {
+  align-items: flex-end;
+
+  @media screen and (max-width: 640px) {
+    align-items: flex-start;
+  }
+
+  .main-button {
+    margin-top: 0;
+    background: #5C62B8;
+  }
+}

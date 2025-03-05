@@ -36,12 +36,12 @@ import { useDebouncedCallback } from 'use-debounce';
 
 import '@/styles/DataTable.scss'
 
-interface DataTableProps {
+interface RecipesTableProps {
   data: Recipe[]
   ingredients: Ingredient[]
 }
 
-export default function DataTable({ data, ingredients }: DataTableProps) {
+export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [searchTerm, setSearchTerm] = React.useState<string>('')
@@ -376,7 +376,7 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
             setSearchTerm(event.target.value)
             debouncedSearch(event.target.value)
           }}
-          className='max-w-sm'
+          className='max-w-sm text-sm'
         />
         <div className='mt-1'>
           <DropdownMenu>
@@ -427,12 +427,21 @@ export default function DataTable({ data, ingredients }: DataTableProps) {
               label: ingredient.name,
               image_url: ingredient.image_url
             }))}
-            hidden={table.getColumn('ingredients')?.getFilterValue() as string[]}
+            hiddenItems={table.getColumn('ingredients')?.getFilterValue() as string[]}
             onSelect={ingredient => {
               const currentFilterValue = table.getColumn('ingredients')?.getFilterValue() as string[]
               const updatedFilterValue = [...(currentFilterValue || []), ingredient]
               table.getColumn('ingredients')?.setFilterValue(updatedFilterValue)
             }}
+            placeholder='Select ingredients...'
+            listRenderer={(item) => (
+              <div className='flex items-center gap-2'>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={ingredients.find(ing => ing.name === item.value)?.image_url} alt={item.label} className="w-4" />
+                {item.label}
+              </div>
+            )}
+            itemName='ingredients'
           />
           <div>
             {(table.getColumn('ingredients')?.getFilterValue() as string[])?.map(ingredient => (

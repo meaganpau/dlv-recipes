@@ -1,0 +1,9 @@
+.main-title {
+    position: relative;
+    &::before {
+        content: '✨';
+        position: absolute;
+        transform: translate(-110%);
+        font-size: 40px;
+    }
+}

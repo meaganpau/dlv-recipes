@@ -2,16 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import RecipesTable from '@/components/RecipesTable';
-import { getAllRecipes, getAllIngredients } from '@/lib/db';
+import CrittersTable from '@/components/CrittersTable';
+import { getAllRecipes, getAllIngredients, getAllCritters } from '@/lib/db';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Recipe } from '@/types/recipe';
 import { Ingredient } from '@/types/ingredient';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Critter } from '@/types/critter';
+
+import '@/styles/Home.scss';
 
 export default function Home() {
   const [currentTable, setCurrentTable] = useState<'recipes' | 'critters'>('recipes');
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [critters, setCritters] = useState<Critter[]>([]);
 
   const fetchRecipes = async () => {
     const recipes = await getAllRecipes();   
@@ -21,10 +26,15 @@ export default function Home() {
     const ingredients = await getAllIngredients();
     setIngredients(ingredients);
   };
+  const fetchCritters = async () => {
+    const critters = await getAllCritters();
+    setCritters(critters);
+  };
 
   useEffect(() => {
     fetchRecipes();
     fetchIngredients();
+    fetchCritters();
   }, []);
 
   const loadingSkeleton = () => {
@@ -48,7 +58,7 @@ export default function Home() {
     <div className="min-h-screen p-8 gap-16 sm:pl-20 sm:pr-20 sm:pt-8 sm:pb-8 font-[family-name:var(--font-geist-sans)]">
       <header className='w-full flex flex-col items-center'>
         <span className='text-xs text-gray-500 uppercase tracking-widest text-center'>welcome to</span>
-        <h1 className='text-6xl font-bold mb-2'>DreamDex</h1>
+        <h1 className='text-6xl font-bold mb-2 main-title'>DreamDex</h1>
       </header>
       <main className="flex flex-col row-start-2 items-center w-full">
         <Tabs defaultValue={currentTable} className='w-full'>
@@ -60,20 +70,21 @@ export default function Home() {
           </div>
           <TabsContent value="recipes" className='mt-8'>
             <h2 className="text-3xl font-bold mb-2">Recipe Database</h2>
-            <h3 className="text-sm text-gray-500 mb-8">
+            <h3 className="text-sm text-gray-500 mb-4">
               A collection of recipes from Disney Dreamlight Valley
             </h3>
             { recipes.length === 0 ? loadingSkeleton() :
               <RecipesTable data={recipes} ingredients={ingredients} />
             }
           </TabsContent>
-          <TabsContent value="critters">
+          <TabsContent value="critters" className='mt-8'>
             <h2 className="text-3xl font-bold mb-2">Critter Database</h2>
-            <h3 className="text-sm text-gray-500 mb-8">
+            <h3 className="text-sm text-gray-500 mb-4">
               A collection of critters from Disney Dreamlight Valley
             </h3>
-            Coming soon
-            {/* <CrittersTable data={critters} /> */}
+            { critters.length === 0 ? loadingSkeleton() :
+              <CrittersTable data={critters} />
+            }
           </TabsContent>
         </Tabs>
       </main>

@@ -17,18 +17,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-
 type ComboboxProps = {
   list: {
     value: string
     label: string
-    image_url: string
   }[]
-  hidden?: string[]
+  hiddenItems?: string[]
   onSelect: (ingredient: string) => void
+  placeholder?: string
+  itemName?: string
+  listRenderer?: (item: { value: string; label: string }) => React.ReactNode
 }
 
-export function Combobox({ list, hidden, onSelect }: ComboboxProps) {
+export function Combobox({ list, hiddenItems, onSelect, placeholder, itemName, listRenderer }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
 
   return (
@@ -40,21 +41,21 @@ export function Combobox({ list, hidden, onSelect }: ComboboxProps) {
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          Select ingredients...
+          {placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search ingredients..." />
+          <CommandInput placeholder={placeholder} />
           <CommandList>
-            <CommandEmpty>No ingredient found.</CommandEmpty>
+            <CommandEmpty>No {itemName} found.</CommandEmpty>
             <CommandGroup>
               {/* If there's no more items, show a message */}
-              {list.filter((item) => !hidden?.includes(item.value)).length === 0 && (
+              {list.filter((item) => !hiddenItems?.includes(item.value)).length === 0 && (
                 <CommandEmpty>No more items.</CommandEmpty>
               )}
-              {list.filter((item) => !hidden?.includes(item.value)).map((item) => (
+              {list.filter((item) => !hiddenItems?.includes(item.value)).map((item) => (
                 <CommandItem
                   key={item.value}
                   value={item.value}
@@ -63,9 +64,7 @@ export function Combobox({ list, hidden, onSelect }: ComboboxProps) {
                     setOpen(false)
                   }}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={item.image_url} alt={item.label} className="w-4" />
-                  {item.label}
+                  {listRenderer ? listRenderer(item) : item.label}
                 </CommandItem>
               ))}
             </CommandGroup>
