@@ -4,63 +4,63 @@ import { config } from 'dotenv';
 import fs from 'fs/promises';
 config({ path: path.resolve(process.cwd(), '.env.local') });
 
-type CritterData = {
-    image_url: string;
-    name: string;
-    critter_type_id: string;
-    location_id: string;
-    schedule: {
-        // if true, the critter is available all day
-        sunday: string | boolean;
-        monday: string | boolean;
-        tuesday: string | boolean;
-        wednesday: string | boolean;
-        thursday: string | boolean;
-        friday: string | boolean;
-        saturday: string | boolean;
-    }
-}
+// type CritterData = {
+//     image_url: string;
+//     name: string;
+//     critter_type_id: string;
+//     location_id: string;
+//     schedule: {
+//         // if true, the critter is available all day
+//         sunday: string | boolean;
+//         monday: string | boolean;
+//         tuesday: string | boolean;
+//         wednesday: string | boolean;
+//         thursday: string | boolean;
+//         friday: string | boolean;
+//         saturday: string | boolean;
+//     }
+// }
 
-type CritterTypeData = {
-    name: string;
-    fav_food: FavFood[];
-    liked_food: LikedFood[];
-    location_id: string;
-    fav_food_reward: Reward[];
-    liked_food_reward: Reward[];
-}
+// type CritterTypeData = {
+//     name: string;
+//     fav_food: FavFood[];
+//     liked_food: LikedFood[];
+//     location_id: string;
+//     fav_food_reward: Reward[];
+//     liked_food_reward: Reward[];
+// }
 
-type FavFood = 
-    // Can either be an item or ingredient
-    { ingredient_id: string; item_id?: never; name?: never; } |
-    { ingredient_id?: never; item_id: string; name?: never; } |
-    { ingredient_id?: never; item_id?: never; name: string; }
+// type FavFood = 
+//     // Can either be an item or ingredient
+//     { ingredient_id: string; item_id?: never; name?: never; } |
+//     { ingredient_id?: never; item_id: string; name?: never; } |
+//     { ingredient_id?: never; item_id?: never; name: string; }
 
-type LikedFood = {
-    generic_ingredient_id?: string;
-    specific_ingredient_ids?: string[]
-    generic_item_id?: string;
-    location_id?: string
-} | { name: string }
+// type LikedFood = {
+//     generic_ingredient_id?: string;
+//     specific_ingredient_ids?: string[]
+//     generic_item_id?: string;
+//     location_id?: string
+// } | { name: string }
 
 
-type Location = {
-    name: string;
-    image_url?: string;
-}
+// type Location = {
+//     name: string;
+//     image_url?: string;
+// }
 
-type Item = {
-    name: string;
-    image_url?: string;
-}
+// type Item = {
+//     name: string;
+//     image_url?: string;
+// }
 
-type Reward = {
-    quantity?: string; // "2" or "1-2"
-} & (
-    // Can either be an item or ingredient
-    { item_id: string; ingredient_id?: never; } |
-    { item_id?: never; ingredient_id: string; }
-);
+// type Reward = {
+//     quantity?: string; // "2" or "1-2"
+// } & (
+//     // Can either be an item or ingredient
+//     { item_id: string; ingredient_id?: never; } |
+//     { item_id?: never; ingredient_id: string; }
+// );
 
 
 async function createTables() {
