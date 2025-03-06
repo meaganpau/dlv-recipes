@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -32,7 +32,7 @@ import { Recipe } from '@/types/recipe';
 import { Ingredient } from '@/types/ingredient';
 import { Combobox } from '@/components/Combobox';
 import { useDebouncedCallback } from 'use-debounce';
-
+import { trackEvent } from '@/lib/analytics';
 
 import '@/styles/DataTable.scss'
 
@@ -42,9 +42,9 @@ interface RecipesTableProps {
 }
 
 export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [searchTerm, setSearchTerm] = React.useState<string>('')
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [searchTerm, setSearchTerm] = useState<string>('')
 
   const memoizedData = useMemo(() => data, [data])
 
@@ -161,7 +161,11 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
         accessorKey: 'name',
         header: ({ column }) => {
           return (
-            <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            <Button variant='ghost' onClick={() => {
+              const isSorted = column.getIsSorted()
+              column.toggleSorting(isSorted === 'asc')
+              trackEvent({ action: 'sort', category: 'recipes_table', label: `name:${isSorted === 'asc' ? 'asc' : 'desc'}` })
+            }}>
               Recipe name
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
@@ -178,7 +182,11 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
         accessorKey: 'type',
         header: ({ column }) => {
           return (
-            <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            <Button variant='ghost' onClick={() => {
+              const isSorted = column.getIsSorted()
+              column.toggleSorting(isSorted === 'asc')
+              trackEvent({ action: 'sort', category: 'recipes_table', label: `type:${isSorted === 'asc' ? 'asc' : 'desc'}` })
+            }}>
               Type
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
@@ -203,7 +211,11 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
         accessorKey: 'stars',
         header: ({ column }) => {
           return (
-            <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            <Button variant='ghost' onClick={() => {
+              const isSorted = column.getIsSorted()
+              column.toggleSorting(isSorted === 'asc')
+              trackEvent({ action: 'sort', category: 'recipes_table', label: `stars:${isSorted === 'asc' ? 'asc' : 'desc'}` })
+            }}>
               Stars
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
@@ -217,7 +229,11 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
         accessorKey: 'energy',
         header: ({ column }) => {
           return (
-            <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            <Button variant='ghost' onClick={() => {
+              const isSorted = column.getIsSorted()
+              column.toggleSorting(isSorted === 'asc')
+              trackEvent({ action: 'sort', category: 'recipes_table', label: `energy:${isSorted === 'asc' ? 'asc' : 'desc'}` })
+            }}>
               Energy
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
@@ -241,7 +257,11 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
         accessorKey: 'sell_price',
         header: ({ column }) => {
           return (
-            <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            <Button variant='ghost' onClick={() => {
+              const isSorted = column.getIsSorted()
+              column.toggleSorting(isSorted === 'asc')
+              trackEvent({ action: 'sort', category: 'recipes_table', label: `sell_price:${isSorted === 'asc' ? 'asc' : 'desc'}` })
+            }}>
               Sell price
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
@@ -265,7 +285,11 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
         accessorKey: 'ingredients',
         header: ({ column }) => {
           return (
-            <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            <Button variant='ghost' onClick={() => {
+              const isSorted = column.getIsSorted()
+              column.toggleSorting(isSorted === 'asc')
+              trackEvent({ action: 'sort', category: 'recipes_table', label: `ingredients:${isSorted === 'asc' ? 'asc' : 'desc'}` })
+            }}>
               Ingredients
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
@@ -317,7 +341,11 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
         accessorKey: 'collection',
         header: ({ column }) => {
           return (
-            <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            <Button variant='ghost' onClick={() => {
+              const isSorted = column.getIsSorted()
+              column.toggleSorting(isSorted === 'asc')
+              trackEvent({ action: 'sort', category: 'recipes_table', label: `collection:${isSorted === 'asc' ? 'asc' : 'desc'}` })
+            }}>
               Collection
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
@@ -364,6 +392,7 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
 
   const debouncedSearch = useDebouncedCallback((value) => {
     table.getColumn('name')?.setFilterValue(value)
+    trackEvent({ action: 'search', category: 'recipes_table', label: value })
   }, 200);
 
   return (
@@ -387,11 +416,17 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => table.getColumn('type')?.setFilterValue(null)}>All</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                table.getColumn('type')?.setFilterValue(null)
+                trackEvent({ action: 'filter', category: 'recipes_table', label: 'type:All' })
+              }}>All</DropdownMenuItem>
               {types.map(type => (
                 <DropdownMenuItem
                   key={type}
-                  onClick={() => table.getColumn('type')?.setFilterValue(type)}
+                  onClick={() => {
+                    table.getColumn('type')?.setFilterValue(type)
+                    trackEvent({ action: 'filter', category: 'recipes_table', label: `type:${type}` })
+                  }}
                 >
                   {type}
                 </DropdownMenuItem>
@@ -408,11 +443,17 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => table.getColumn('collection')?.setFilterValue(null)}>All</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                table.getColumn('collection')?.setFilterValue(null)
+                trackEvent({ action: 'filter', category: 'recipes_table', label: 'collection:All' })
+              }}>All</DropdownMenuItem>
               {collections.map(collection => (
                 <DropdownMenuItem
                   key={collection}
-                  onClick={() => table.getColumn('collection')?.setFilterValue(collection)}
+                  onClick={() => {
+                    table.getColumn('collection')?.setFilterValue(collection)
+                    trackEvent({ action: 'filter', category: 'recipes_table', label: `collection:${collection}` })
+                  }}
                 >
                   {collection}
                 </DropdownMenuItem>
@@ -432,6 +473,7 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
               const currentFilterValue = table.getColumn('ingredients')?.getFilterValue() as string[]
               const updatedFilterValue = [...(currentFilterValue || []), ingredient]
               table.getColumn('ingredients')?.setFilterValue(updatedFilterValue)
+              trackEvent({ action: 'filter', category: 'recipes_table', label: `ingredients:${ingredient}` })
             }}
             placeholder='Select ingredients...'
             listRenderer={(item) => (
@@ -458,6 +500,7 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
                     const currentFilterValue = table.getColumn('ingredients')?.getFilterValue() as string[]
                     const updatedFilterValue = currentFilterValue?.filter(i => i !== ingredient)
                     table.getColumn('ingredients')?.setFilterValue(updatedFilterValue)
+                    trackEvent({ action: 'filter', category: 'recipes_table', label: `ingredients:-${ingredient}` })
                   }}
                 >
                   <X className='w-4 h-4 cursor-pointer' />
@@ -474,6 +517,7 @@ export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
             setSearchTerm('')
             table.setColumnFilters(null)
             table.setSorting([])
+            trackEvent({ action: 'clear_filters', category: 'recipes_table' })
           }}
         >
           Clear filters

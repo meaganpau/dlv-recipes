@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import RecipesTable from '@/components/RecipesTable';
 import CrittersTable from '@/components/CrittersTable';
+import { trackEvent } from '@/lib/analytics';
 
 const loadingSkeleton = () => {
   return (
@@ -30,8 +31,14 @@ export function DataTabs({ recipes, ingredients, critters }) {
     <Tabs defaultValue={currentTable} className='w-full'>
     <div className='text-center'>
       <TabsList className='ml-auto mr-auto'>
-        <TabsTrigger value="recipes" onClick={() => setCurrentTable('recipes')}>Recipes</TabsTrigger>
-        <TabsTrigger value="critters" onClick={() => setCurrentTable('critters')}>Critters</TabsTrigger>
+        <TabsTrigger value="recipes" onClick={() => {
+          setCurrentTable('recipes')
+          trackEvent({ action: 'click_recipes', category: 'data_tabs' })
+        }}>Recipes</TabsTrigger>
+        <TabsTrigger value="critters" onClick={() => {
+          setCurrentTable('critters')
+          trackEvent({ action: 'click_critters', category: 'data_tabs' })
+        }}>Critters</TabsTrigger>
       </TabsList>
     </div>
     <TabsContent value="recipes" className='mt-8'>

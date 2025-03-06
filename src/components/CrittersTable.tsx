@@ -27,6 +27,7 @@ import { useDebouncedCallback } from 'use-debounce';
 import { Critter } from '@/types/critter';
 import { DAY_OPTIONS, HOUR_OPTIONS } from '@/utils/constants';
 import { convert12HourTo24Hour, convert24HourTo12Hour, getIsAvailableAtTime, getIsAvailableOnDay } from '@/utils/time-utils';
+import { trackEvent } from '@/lib/analytics';
 
 import '@/styles/DataTable.scss'
 
@@ -77,7 +78,11 @@ export default function CrittersTable({ data }: CrittersTableProps) {
         accessorKey: 'name',
         header: ({ column }) => {
           return (
-            <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            <Button variant='ghost' onClick={() => {
+              const isSorted = column.getIsSorted()
+              column.toggleSorting(isSorted === 'asc')
+              trackEvent({ action: 'sort', category: 'critters_table', label: `name:${isSorted === 'asc' ? 'asc' : 'desc'}` })
+            }}>
               Critter name
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
@@ -94,7 +99,11 @@ export default function CrittersTable({ data }: CrittersTableProps) {
         accessorKey: 'type',
         header: ({ column }) => {
           return (
-            <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            <Button variant='ghost' onClick={() => {
+              const isSorted = column.getIsSorted()
+              column.toggleSorting(isSorted === 'asc')
+              trackEvent({ action: 'sort', category: 'critters_table', label: `type:${isSorted === 'asc' ? 'asc' : 'desc'}` })
+            }}>
               Type
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
@@ -111,7 +120,11 @@ export default function CrittersTable({ data }: CrittersTableProps) {
         accessorKey: 'location',
         header: ({ column }) => {
           return (
-            <Button variant='ghost' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+            <Button variant='ghost' onClick={() => {
+              const isSorted = column.getIsSorted()
+              column.toggleSorting(isSorted === 'asc')
+              trackEvent({ action: 'sort', category: 'critters_table', label: `location:${isSorted === 'asc' ? 'asc' : 'desc'}` })
+            }}>
               Location
               {column.getIsSorted() === false && <ArrowUpDown className='ml-2 h-4 w-4' />}
               {column.getIsSorted() === 'asc' && <ArrowUp className='ml-2 h-4 w-4' />}
@@ -201,6 +214,7 @@ export default function CrittersTable({ data }: CrittersTableProps) {
 
   const debouncedSearch = useDebouncedCallback((value) => {
     table.getColumn('name')?.setFilterValue(value)
+    trackEvent({ action: 'search', category: 'critters_table', label: value })
   }, 200);
 
   return (
@@ -224,9 +238,11 @@ export default function CrittersTable({ data }: CrittersTableProps) {
               } else if (value === 'all') {
                 table.getColumn('type')?.setFilterValue(null)
                 setTypeFilterIsAll(true)
+                trackEvent({ action: 'filter', category: 'critters_table', label: 'type:all' })
               } else {
                 table.getColumn('type')?.setFilterValue(value)
                 setTypeFilterIsAll(false)
+                trackEvent({ action: 'filter', category: 'critters_table', label: `type:${value}` })
               }
             }}>
               <SelectTrigger className='w-[240px]'>
@@ -248,9 +264,11 @@ export default function CrittersTable({ data }: CrittersTableProps) {
               } else if (value === 'all') {
                 table.getColumn('location')?.setFilterValue(null)
                 setLocationFilterIsAll(true)
+                trackEvent({ action: 'filter', category: 'critters_table', label: 'location:all' })
               } else {
                 table.getColumn('location')?.setFilterValue(value)
                 setLocationFilterIsAll(false)
+                trackEvent({ action: 'filter', category: 'critters_table', label: `location:${value}` })
               }
             }}>
               <SelectTrigger className='w-[240px]'>
@@ -282,18 +300,21 @@ export default function CrittersTable({ data }: CrittersTableProps) {
                     hour: null,
                     minute: table.getColumn('schedule')?.getFilterValue()?.[0]?.minute || 0
                   }])
+                  trackEvent({ action: 'filter', category: 'critters_table', label: `schedule:hour:all` })
                 } else if (value === 'all-day') {
                   table.getColumn('schedule')?.setFilterValue([{
                     day: table.getColumn('schedule')?.getFilterValue()?.[0]?.day,
                     hour: 'all-day',
                     minute: table.getColumn('schedule')?.getFilterValue()?.[0]?.minute || 0
                   }])
+                  trackEvent({ action: 'filter', category: 'critters_table', label: `schedule:hour:all-day` })
                 } else {
                   table.getColumn('schedule')?.setFilterValue([{
                     day: table.getColumn('schedule')?.getFilterValue()?.[0]?.day,
                     hour: convert12HourTo24Hour(value),
                     minute: table.getColumn('schedule')?.getFilterValue()?.[0]?.minute || 0
                   }])
+                  trackEvent({ action: 'filter', category: 'critters_table', label: `schedule:hour:${value}` })
                 }
               }}>
               <SelectTrigger className='w-[240px]'>
@@ -318,12 +339,14 @@ export default function CrittersTable({ data }: CrittersTableProps) {
                   hour: table.getColumn('schedule')?.getFilterValue()?.[0]?.hour,
                   minute: table.getColumn('schedule')?.getFilterValue()?.[0]?.minute || 0
                 }])
+                trackEvent({ action: 'filter', category: 'critters_table', label: `schedule:day:all` })
               } else {
                 table.getColumn('schedule')?.setFilterValue([{
                   day: value,
                   hour: table.getColumn('schedule')?.getFilterValue()?.[0]?.hour,
                   minute: table.getColumn('schedule')?.getFilterValue()?.[0]?.minute || 0
                 }])
+                trackEvent({ action: 'filter', category: 'critters_table', label: `schedule:day:${value}` })
               }
             }}>
               <SelectTrigger className='w-[240px]'>
@@ -353,6 +376,7 @@ export default function CrittersTable({ data }: CrittersTableProps) {
                 hour: currentHour,
                 minute: currentMinute
               }])
+              trackEvent({ action: 'available_now', category: 'critters_table' })
             }}
           >
             <Clock />Available Now
@@ -367,6 +391,7 @@ export default function CrittersTable({ data }: CrittersTableProps) {
               table.setSorting([])
               setTypeFilterIsAll(false)
               setLocationFilterIsAll(false)
+              trackEvent({ action: 'clear_filters', category: 'critters_table' })
             }}
           >
             Clear filters
