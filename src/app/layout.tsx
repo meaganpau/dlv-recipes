@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import type { Metadata } from "next";
 import "@/styles/globals.css";
 
 const geistSans = Geist({
@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dreamlight Cookbook",
-  description: "A collection of recipes from Disney Dreamlight Valley",
+  title: "DreamDex - Dreamlight Valley Recipes & Critters",
+  description: "A collection of recipes and critters from Disney Dreamlight Valley",
 };
 
 export default function RootLayout({
