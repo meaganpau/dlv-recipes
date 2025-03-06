@@ -3,12 +3,8 @@ import { DataTabs } from '@/components/DataTabs';
 
 import '@/styles/Home.scss';
 
-export default async function Home() {
-  // Fetch data server-side
-  const recipes = await getAllRecipes();
-  const ingredients = await getAllIngredients();
-  const critters = await getAllCritters();
-  
+export default function Home() {
+  const startTime = performance.now();
   return (
     <div className="min-h-screen p-8 gap-16 sm:pl-20 sm:pr-20 sm:pt-8 sm:pb-8 font-[family-name:var(--font-geist-sans)]">
       <header className='w-full flex flex-col items-center'>
@@ -17,9 +13,10 @@ export default async function Home() {
       </header>
       <main>
         <DataTabs 
-          recipes={recipes}
-          ingredients={ingredients}
-          critters={critters}
+          recipes={getAllRecipes()}
+          ingredients={getAllIngredients()}
+          critters={getAllCritters()}
+          startTime={startTime}
         />
       </main>
       <footer className="mr-auto ml-auto flex gap-6 flex-wrap items-center justify-center border-t border-gray-200 pt-4 w-60 mt-10">
@@ -31,7 +28,7 @@ export default async function Home() {
             >
             Made by Meagan Pau
           </a>
-          </span>
+        </span>
       </footer>
     </div>
   );

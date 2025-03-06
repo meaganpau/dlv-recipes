@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -39,14 +39,19 @@ import '@/styles/DataTable.scss'
 interface RecipesTableProps {
   data: Recipe[]
   ingredients: Ingredient[]
+  startTime: number
 }
 
-export default function RecipesTable({ data, ingredients }: RecipesTableProps) {
+export default function RecipesTable({ data, ingredients, startTime }: RecipesTableProps) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [searchTerm, setSearchTerm] = useState<string>('')
 
   const memoizedData = useMemo(() => data, [data])
+
+  useEffect(() => {
+    trackEvent({ action: 'load_data', category: 'recipes_table', label: 'success', value: performance.now() - startTime })
+  }, [startTime])
 
   // Render Type cell with image and name
   const renderType = useCallback((type: Recipe['type']) => {

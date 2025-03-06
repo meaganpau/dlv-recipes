@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -33,9 +33,10 @@ import '@/styles/DataTable.scss'
 
 interface CrittersTableProps {
   data: Critter[]
+  startTime: number
 }
 
-export default function CrittersTable({ data }: CrittersTableProps) {
+export default function CrittersTable({ data, startTime }: CrittersTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [searchTerm, setSearchTerm] = React.useState<string>('')
@@ -43,6 +44,10 @@ export default function CrittersTable({ data }: CrittersTableProps) {
   const [locationFilterIsAll, setLocationFilterIsAll] = React.useState<boolean>(false)
 
   const memoizedData = useMemo(() => data, [data])
+
+  useEffect(() => {
+    trackEvent({ action: 'load_data', category: 'critters_table', label: 'success', value: performance.now() - startTime })
+  }, [startTime])
   
   const renderLocation = useCallback((location: Critter['location']) => {
     // eslint-disable-next-line @next/next/no-img-element
